@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Form Example</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <form id="my-form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name"><br><br>
+      
+      <label for="background">Background:</label>
+      <textarea id="background" name="background"></textarea><br><br>
+      
+      <label for="personality">Personality:</label>
+      <textarea id="personality" name="personality"></textarea><br><br>
+      
+      <label for="circumstances">Current Circumstances:</label>
+      <textarea id="circumstances" name="circumstances"></textarea><br><br>
+      
+      <label for="greeting">Common Greeting:</label>
+      <textarea id="greeting" name="greeting"></textarea><br><br>
+      
+      <div id="message-container"></div>
+      
+      <button type="button" onclick="addMessage()">Add Message Example</button><br><br>
+      <button type="submit">Submit</button>
+    </form>
+
+    <script>
+      const form = document.getElementById('my-form');
+      const messageContainer = document.getElementById('message-container');
+
+      let messageCount = 0;
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const data = {};
+
+        for (const [key, value] of formData.entries()) {
+          if (key.startsWith('message')) {
+            if (!data.mes_example) {
+              data.mes_example = '';
+            }
+            if (data.mes_example) {
+              data.mes_example += '\n';
+            }
+            data.mes_example += value;
+          } else {
+            const keyMapping = {
+              background: 'description',
+              circumstances: 'world_scenario',
+              greeting: 'first_mes',
+            };
+            data[keyMapping[key] || key] = value;
+          }
+        }
+
+        const json = JSON.stringify(data);
+        console.log(json);
+
+        // Create a downloadable JSON file
+        const downloadLink = document.createElement('a');
+        const file = new Blob([json], { type: 'application/json' });
+        downloadLink.href = URL.createObjectURL(file);
+        downloadLink.download = 'form_data.json';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      });
+
+      
+      function addMessage() {
+        if (messageCount < 8) {
+          messageCount++;
+
+          const messageLabel = document.createElement('label');
+          messageLabel.for = `message${messageCount}`;
+          messageLabel.textContent = `Message Example ${messageCount}:`;
+
+          const messageTextarea = document.createElement('textarea');
+          messageTextarea.id = `message${messageCount}`;
+          messageTextarea.name = `message${messageCount}`;
+
+          messageContainer.appendChild(messageLabel);
+          messageContainer.appendChild(messageTextarea);
+          messageContainer.appendChild(document.createElement('br'));
+          messageContainer.appendChild(document.createElement('br'));
+        }
+      }
+
+      // Add the initial message example to the container
+      addMessage();
+    </script>
+  </body>
+</html>
